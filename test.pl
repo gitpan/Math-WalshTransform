@@ -15,17 +15,23 @@ my $eps = .000000001;
 
 for ($n=0; $n<=1023; $n++) { push @f, rand 9.9; }
 
-@H = &fht(@f); @h = &fhtinv(@H);
+my @H = &fht(@f); @h = &fhtinv(@H);
 print STDERR "Hadamard transform and inverse: "; &unequal(\@f,\@h);
 
-@W = &fwt(@f); @w = &fwtinv(@W);
+my @W = &fwt(@f); @w = &fwtinv(@W);
 print STDERR "Walsh transform and inverse: "; &unequal(\@f,\@w);
 
-@HW = &hadamard2walsh(@H);
-print STDERR "Hadamard to Walsh: "; &unequal(\@W,\@HW);
+my @HW = &hadamard2walsh(@H);
+print STDERR "Hadamard to Walsh:   "; &unequal(\@W,\@HW);
 
-@WH = &walsh2hadamard(@W);
-print STDERR "Walsh to Hadamard: "; &unequal(\@H,\@WH);
+my @WH = &walsh2hadamard(@W);
+print STDERR "Walsh to Hadamard:   "; &unequal(\@H,\@WH);
+
+my @f1; for ($n=0; $n<=511; $n++) { push @f1, rand 9.9; }
+my @f2; for ($n=0; $n<=511; $n++) { push @f2, rand 9.9; }
+my @lc1 = &Math::WalshTransform::old_logical_convolution(\@f1, \@f2);
+my @lc2 = &logical_convolution(\@f1, \@f2);
+print STDERR "Logical Convolution: "; &unequal(\@lc1,\@lc2);
 
 if ($failed) {
 	warn "failed $failed tests out of $taken\n"; exit 1;

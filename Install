@@ -5,7 +5,7 @@ use Config;
 &check_kit;
 
 my $libdir; my $bindir; my $man1dir; my $man3dir; my $comment; my $perlbin;
-my $version = '1.00';
+my $version = '1.01';
 ($libdir, $bindir, $man1dir, $man3dir) = &defaults();
 $bindir = '';
 
@@ -16,7 +16,7 @@ if (! -t STDIN) {  # not interactive, use defaults ...
 }
 
 if ($libdir) {
-	my $choice = &choose('Installing ...', 'interactively',
+	my $choice = &choose("Installing\n\n(Arrow-keys and Return, or q to quit)",
 	'using system default locations', 'Cancel');
 	if ($choice eq 'Cancel') { exit 0; }
 	if ($choice eq 'using system default locations') {
@@ -258,11 +258,11 @@ sub check_kit {
 
 	my %file_sizes = (
 		'README', 1276,
-		'Changes', 77,
+		'Changes', 221,
 		'MANIFEST', 75,
-		'WalshTransform.pm', 18457,
-		'Clui', 31718,
-		'test.pl', 2068,
+		'WalshTransform.pm', 18943,
+		'Clui', 27404,
+		'test.pl', 2376,
 	);
 
 	my $problem_found = 0;

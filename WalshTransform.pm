@@ -9,7 +9,7 @@
 
 package Math::WalshTransform;
 no strict;
-$VERSION = '1.00';
+$VERSION = '1.01';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
 require Exporter;
 @ISA = qw(Exporter);
@@ -175,17 +175,28 @@ sub fwtinv { my @mr = @_;
 }
 
 sub logical_convolution { my ($xref, $yref) = @_;
-	if (ref $xref ne 'ARRAY') {
-		warn "Math::WalshTransform::logical_convolution 1st arg must be array ref\n";
+	if (ref $xref ne 'ARRAY') { warn
+	"Math::WalshTransform::logical_convolution 1st arg must be array ref\n";
 		return undef;
-	} elsif (ref $yref ne 'ARRAY') {
-		warn "Math::WalshTransform::logical_convolution 2nd arg must be array ref\n";
+	} elsif (ref $yref ne 'ARRAY') { warn
+	"Math::WalshTransform::logical_convolution 2nd arg must be array ref\n";
 		return undef;
 	}
+	my @Fx = &fwt(@$xref);  my @Fy = &fwt(@$yref);  my @Fz; $#Fz=$#Fx;
+	foreach ($[ .. $#Fx) { $Fz[$_] = $Fx[$_] * $Fy[$_]; }
+	return &fwtinv(@Fz);
+}
 
+sub old_logical_convolution { my ($xref, $yref) = @_;
+	if (ref $xref ne 'ARRAY') { warn
+	"Math::WalshTransform::logical_convolution 1st arg must be array ref\n";
+		return undef;
+	} elsif (ref $yref ne 'ARRAY') { warn
+	"Math::WalshTransform::logical_convolution 2nd arg must be array ref\n";
+		return undef;
+	}
 	local $[ = 0;
-	my @x = @$xref;
-	my @y = @$yref;
+	my @x = @$xref; my @y = @$yref;
 	my $n = scalar @x;
 	my @z; $#z=$#x;
 	my $j; my $k; my $sum;
@@ -246,13 +257,13 @@ sub sublist { my ($aref, $offset, $length) = @_;
 	return @sublist;
 }
 sub distance { my ($xref, $yref) = @_;  # Euclidian metric
-   if (ref $xref ne 'ARRAY') {
-      warn "Math::WalshTransform::distance 1st arg must be array ref\n";
+	if (ref $xref ne 'ARRAY') {
+		warn "Math::WalshTransform::distance 1st arg must be array ref\n";
 		return undef;
-   } elsif (ref $yref ne 'ARRAY') {
-      warn "Math::WalshTransform::distance 2nd arg must be array ref\n";
+	} elsif (ref $yref ne 'ARRAY') {
+		warn "Math::WalshTransform::distance 2nd arg must be array ref\n";
 		return undef;
-   }
+	}
 	my $distance = 0.0; my $i; my $diff;
 	for ($i=$[; $i<= $#$xref; $i++) {
 		$diff = ${$xref}[$i] - ${$yref}[$i];
@@ -304,7 +315,7 @@ sub jw2jh { my $n = shift;
 	return @whole;
 }
 
-sub gaussn {   my $standdev = $_[$[];
+sub gaussn {	my $standdev = $_[$[];
 	# returns normal distribution around 0.0 by the Box-Muller rules
 	if (! $flag) {
 		$a = sqrt(-2.0 * log(rand));
@@ -381,7 +392,7 @@ Not yet included are multi-dimensional Hadamard and Walsh Transforms,
 conversion between Logical and Arithmetic Autocorrelation Functions,
 or conversion between the Walsh Power Spectrum and the Fourier Power Spectrum.
 
-Version 1.00,
+Version 1.01,
 #COMMENT#
 
 =head1 SUBROUTINES
@@ -429,15 +440,15 @@ I<hadamard2walsh> returns a list of the corresponding Walsh transform.
 
 The arguments are references to two arrays of values I<x> and I<y>
 which must both be of the same size which must be a power of 2.
-I<logical_convolution> returns a list of the logical convolution
+I<logical_convolution> returns a list of the logical (or dyadic) convolution
 of the two sets of values.  See the MATHEMATICS section ...
 
 =item I<logical_autocorrelation(@x)>
 
 The argument is a list of values I<x>;
 the number of values must be a power of 2.
-I<logical_autocorrelation> returns a list of the logical autocorrelation
-of the set of values.  See the MATHEMATICS section ...
+I<logical_autocorrelation> returns a list of the logical (or dyadic)
+autocorrelation of the set of values.  See the MATHEMATICS section ...
 
 =item I<power_spectrum(@x)>
 
@@ -544,14 +555,14 @@ Because all the matrix elements are either 1 or -1,
 these transforms involve no multiplications
 and are very computationally efficient.
 
-The Logical Convolution of two arrays x and y is defined by
+The Logical (or Dyadic) Convolution of two arrays x and y is defined by
 
  z(k) = (1/N) * Sigma x(k^j)*y(j)
 
 where the ^ is used in its Perl sense, to mean bitwise exclusive-or.
-There exists a Logical Convolution Theorem, analogous to the normal case,
-that the Walsh transform of the logical convolution of two sequences
-is the product of their Walsh transforms,
+There exists a Logical (or Dyadic) Convolution Theorem, analogous to the
+normal case, that the Walsh transform of the logical convolution of two
+sequences is the product of their Walsh transforms,
 and that the Walsh transform of the product of two sequences is the
 logical convolution of their Walsh transforms.
 
