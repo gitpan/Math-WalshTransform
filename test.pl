@@ -7,7 +7,7 @@
 #            modify it under the same terms as Perl itself.             #
 #########################################################################
 
-require './WalshTransform.pm'; import Math::WalshTransform;
+use Math::WalshTransform;
 
 my $taken  = 0;
 my $failed = 0;

@@ -9,7 +9,7 @@
 
 package Math::WalshTransform;
 no strict;
-$VERSION = '1.01';
+$VERSION = '1.02';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
 require Exporter;
 @ISA = qw(Exporter);
@@ -392,7 +392,7 @@ Not yet included are multi-dimensional Hadamard and Walsh Transforms,
 conversion between Logical and Arithmetic Autocorrelation Functions,
 or conversion between the Walsh Power Spectrum and the Fourier Power Spectrum.
 
-Version 1.01,
+Version 1.02,
 #COMMENT#
 
 =head1 SUBROUTINES
@@ -545,15 +545,16 @@ and the one-dimensional Walsh transform pair is defined by
  F(j) = (1/N) * Sigma f(k)*Wal(j,k)
  f(j) = Sigma F(k)*Wal(j,k)
 
+The two transforms are equivalent, and conversion between them
+only involves rearranging the order of the components.
 Since the Walsh functions are in order of increasing number of sign-changes,
 the Walsh transform is more Fourier-like,
-and for that reason is perhaps used more often.
-But the two transforms are equivalent, and conversion between them
-only involves rearranging the order of the components.
+and for that reason is used more often,
+although it does use several per-cent more CPU time.
 
 Because all the matrix elements are either 1 or -1,
-these transforms involve no multiplications
-and are very computationally efficient.
+these transforms involve almost no multiplications
+and are computationally very efficient.
 
 The Logical (or Dyadic) Convolution of two arrays x and y is defined by
 

@@ -1,3 +1,4 @@
 20021019 Math-WalshTransform-1.00 Hadamard and Walsh Transforms and Inverses
 20040809 'perl Install' works better on solaris without Term::Size
 20041211 1.01 big performance improvement in convolution, O(N^2) -> O(NlogN)
+20041215 1.02 test.pl has use not require, for invocation from other dirs
