@@ -11,32 +11,28 @@ package Math::WalshTransform;
 no strict;
 $VERSION = '1.02';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
+require DynaLoader;
 require Exporter;
-@ISA = qw(Exporter);
+@ISA = qw(Exporter DynaLoader);
 @EXPORT = qw(fht fhtinv fwt fwtinv biggest logical_convolution
  logical_autocorrelation power_spectrum walsh2hadamard hadamard2walsh);
 @EXPORT_OK = qw(sublist distance size average normalise arr2txt);
 %EXPORT_TAGS = (ALL => [@EXPORT,@EXPORT_OK]);
+bootstrap Math::WalshTransform $VERSION;
 
-sub new {
-	my $arg1 = shift;
-	my $class = ref($arg1) || $arg1; # can be used as class or instance method
-	my $self  = {};   # ref to an empty hash
-	bless $self, $class;
-	$self->_initialise();
-	return $self;
-}
+$PP = 0;
 
-sub fht { my @mr = @_;
-	local $[ = 1;
+sub fht {
+	if (! $PP) { return &xs_fht((scalar @_), @_); }
+	my @mr = @_;
 	my $k = 1;
 	my $n = scalar @mr;
 	my $l = $n;
-	my $i; my $nl; my $nk;
+	my $i; my $nl; my $nk; my $j;
 	while () {
-		$i = 0; $l = $l/2;
-		for ($nl=$[; $nl<= $l; $nl++) {
-			for ($nk=$[; $nk<= $k; $nk++) {
+		$i = $[-1; $l = $l/2;
+		for ($nl=1; $nl<= $l; $nl++) {
+			for ($nk=1; $nk<= $k; $nk++) {
 				$i++; $j = $i+$k;
 				$mr[$i] = ($mr[$i] + $mr[$j])/2;
 				$mr[$j] =  $mr[$i] - $mr[$j];
@@ -49,19 +45,21 @@ sub fht { my @mr = @_;
 	if ($k == $n) {
 		return @mr;
 	} else {
-		warn "Math::WalshTransform::fht \$n = $n but must be power of 2\n"; return ();
+		warn "Math::WalshTransform::fht \$n = $n but must be power of 2\n";
+		return ();
 	}
 }
-sub fhtinv { my @mr = @_;
-	local $[ = 1;
+sub fhtinv {
+	if (! $PP) { return &xs_fhtinv((scalar @_), @_); }
+	my @mr = @_;
 	my $k = 1;
 	my $n = scalar @mr;
 	my $l = $n;
-	my $i; my $nl; my $nk;
+	my $i; my $nl; my $nk; my $j;
 	while () {
-		$i = 0; $l = $l/2;
-		for ($nl=$[; $nl<= $l; $nl++) {
-			for ($nk=$[; $nk<= $k; $nk++) {
+		$i = $[-1; $l = $l/2;
+		for ($nl=1; $nl<= $l; $nl++) {
+			for ($nk=1; $nk<= $k; $nk++) {
 				$i++; $j = $i+$k;
 				$mr[$i] = $mr[$i] + $mr[$j];
 				$mr[$j] = $mr[$i] - 2*$mr[$j];
@@ -78,9 +76,9 @@ sub fhtinv { my @mr = @_;
 		return ();
 	}
 }
-sub fwt { my @mr = @_;
-	# wouldn't it be easier to Hadamard transform and shuffle the results ?
-	local $[ = 1;
+sub fwt { # might be easier to Hadamard transform and shuffle the results
+	if (! $PP) { return &xs_fwt((scalar @_), @_); }
+	my @mr = @_;
 	my $n = scalar @mr; my @nr; $#nr=$#mr;
 	my $k; my $l; my $i; my $nl; my $nk; my $kp1;
 
@@ -89,13 +87,13 @@ sub fwt { my @mr = @_;
 	my $alternate = $m & 1;
 
 	if ($alternate) {
-		for ($k=1; $k<=$n; $k+=2) {
+		for ($k=$[; $k<$n-$[; $k+=2) {
 			$kp1 = $k+1;
 			$mr[$k]   = ($mr[$k] + $mr[$kp1])/2;
 			$mr[$kp1] =  $mr[$k] - $mr[$kp1];
 		}
 	} else { 
-		for ($k=1; $k<=$n; $k+=2) { 
+		for ($k=$[; $k<$n-$[; $k+=2) { 
 			$kp1 = $k+1;
 			$nr[$k]   = ($mr[$k] + $mr[$kp1])/2;
 			$nr[$kp1] =  $nr[$k] - $mr[$kp1];
@@ -104,8 +102,8 @@ sub fwt { my @mr = @_;
 
 	$k = 1; my $nh = $n/2;
 	while () {
-		$kh = $k; $k = $k+$k; $kp1 = $k+1; last if $kp1>$n;
-		$nh = $nh/2; $l = 1; $i = 1; $alternate = !$alternate;
+		my $kh = $k; $k = $k+$k; $kp1 = $k+1; last if $kp1>$n;
+		$nh = $nh/2; $l = $[; $i = $[; $alternate = !$alternate;
 		for ($nl=1; $nl<=$nh; $nl++) {
 			for ($nk=1; $nk<=$kh; $nk++) {
 				if ($alternate) {
@@ -126,9 +124,9 @@ sub fwt { my @mr = @_;
 	}
 	return @mr;
 }
-sub fwtinv { my @mr = @_;
-	local $[ = 1;
-	my $n = scalar @mr; my @nr; $#nr=$#mr;
+sub fwtinv {
+	if (! $PP) { return &xs_fwtinv((scalar @_), @_); }
+	my @mr = @_; my $n = scalar @mr; my @nr; $#nr=$#mr;
 	my $k; my $l; my $i; my $nl; my $nk; my $kp1;
 
 	my $m = 0;  # log2($n)
@@ -136,13 +134,13 @@ sub fwtinv { my @mr = @_;
 	my $alternate = $m & 1;
 
 	if ($alternate) {
-		for ($k=1; $k<=$n; $k+=2) {
+		for ($k=$[; $k<$n-$[; $k+=2) {
 			$kp1 = $k+1;
 			$mr[$k]   =  $mr[$k] + $mr[$kp1];
 			$mr[$kp1] =  $mr[$k] - $mr[$kp1] - $mr[$kp1];
 		}
 	} else { 
-		for ($k=1; $k<=$n; $k+=2) { 
+		for ($k=$[; $k<$n-$[; $k+=2) { 
 			$kp1 = $k+1;
 			$nr[$k]   =  $mr[$k] + $mr[$kp1];
 			$nr[$kp1] =  $mr[$k] - $mr[$kp1];
@@ -151,8 +149,8 @@ sub fwtinv { my @mr = @_;
 
 	$k = 1; my $nh = $n/2;
 	while () {
-		$kh = $k; $k = $k+$k; $kp1 = $k+1; last if $kp1>$n;
-		$nh = $nh/2; $l = 1; $i = 1; $alternate = !$alternate;
+		my $kh = $k; $k = $k+$k; $kp1 = $k+1; last if $kp1>$n;
+		$nh = $nh/2; $l = $[; $i = $[; $alternate = !$alternate;
 		for ($nl=1; $nl<=$nh; $nl++) {
 			for ($nk=1; $nk<=$kh; $nk++) {
 				if ($alternate) {
@@ -228,7 +226,7 @@ sub hadamard2walsh {
 
 # ---------------------- EXPORT_OK stuff ---------------------------
 
-sub biggest { my $k = shift @_; @weeded = @_;
+sub biggest { my $k = shift @_; my @weeded = @_;
 	my $smallest;
 	if ($k <= 0) {
 		my $tot = 0.0; foreach (@weeded) { $tot += abs $_; }
@@ -283,7 +281,7 @@ sub normalise {
 	return @normalised;
 }
 sub average {
-	my $i = $[; my $j;
+	my $i = $[; my $j; my @sum;
 	foreach (@_) {
 		if (ref $_ ne 'ARRAY') {
 			warn "Math::WalshTransform::average argument $i must be array ref\n";
@@ -315,6 +313,7 @@ sub jw2jh { my $n = shift;
 	return @whole;
 }
 
+my $flag = 0;
 sub gaussn {	my $standdev = $_[$[];
 	# returns normal distribution around 0.0 by the Box-Muller rules
 	if (! $flag) {
@@ -388,12 +387,14 @@ for example in software that monitors time-series data such as
 system or network administration data, share-price, currency,
 ecological, opinion poll, process management data, and so on.
 
+As from version 1.10, Math::WalshTransform uses C routines to perform
+the transforms. This runs 25 to 30 times faster than previous versions.
+
 Not yet included are multi-dimensional Hadamard and Walsh Transforms,
 conversion between Logical and Arithmetic Autocorrelation Functions,
 or conversion between the Walsh Power Spectrum and the Fourier Power Spectrum.
 
-Version 1.02,
-#COMMENT#
+Version 1.02
 
 =head1 SUBROUTINES
 

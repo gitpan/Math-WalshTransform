@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#!/usr/bin/perl -w
 #########################################################################
 #        This Perl script is Copyright (c) 2002, Peter J Billam         #
 #               c/o P J B Computing, www.pjb.com.au                     #
@@ -7,57 +7,46 @@
 #            modify it under the same terms as Perl itself.             #
 #########################################################################
 
+use Test::Simple tests => 7;
 use Math::WalshTransform;
+# $Math::WalshTransform::PP = 1;
 
-my $taken  = 0;
-my $failed = 0;
-my $eps = .000000001;
+my @x = (0,2,2,0);
+my @X = &fht(@x);
+ok (&equal(\@X,[1,0,0,-1]), "Hadamard transform");
+@X = &fwt(@x);
+ok (&equal(\@X,[1,0,-1,0]), "Walsh transform");
 
+my @f;
 for ($n=0; $n<=1023; $n++) { push @f, rand 9.9; }
 
 my @H = &fht(@f); @h = &fhtinv(@H);
-print STDERR "Hadamard transform and inverse: "; &unequal(\@f,\@h);
+ok (&equal(\@f,\@h), "Hadamard transform and inverse");
 
 my @W = &fwt(@f); @w = &fwtinv(@W);
-print STDERR "Walsh transform and inverse: "; &unequal(\@f,\@w);
+ok (&equal(\@f,\@w), "Walsh transform and inverse");
 
 my @HW = &hadamard2walsh(@H);
-print STDERR "Hadamard to Walsh:   "; &unequal(\@W,\@HW);
+ok (&equal(\@W,\@HW), "Hadamard to Walsh");
 
 my @WH = &walsh2hadamard(@W);
-print STDERR "Walsh to Hadamard:   "; &unequal(\@H,\@WH);
+ok (&equal(\@H,\@WH), "Walsh to Hadamard");
 
 my @f1; for ($n=0; $n<=511; $n++) { push @f1, rand 9.9; }
 my @f2; for ($n=0; $n<=511; $n++) { push @f2, rand 9.9; }
 my @lc1 = &Math::WalshTransform::old_logical_convolution(\@f1, \@f2);
 my @lc2 = &logical_convolution(\@f1, \@f2);
-print STDERR "Logical Convolution: "; &unequal(\@lc1,\@lc2);
+ok (&equal(\@lc1,\@lc2), "Logical Convolution");
 
-if ($failed) {
-	warn "failed $failed tests out of $taken\n"; exit 1;
-} else {
-	warn "all $taken tests succeeded\n"; exit 0;
-}
 # --------------------------- infrastructure ----------------
-sub unequal { my ($xref, $yref) = @_;
-	my @x = @$xref;
-	my @y = @$yref;
-	$taken++;
-	if (scalar @x != scalar @y) {
-		print STDERR "test $taken: unequal sized arrays ".scalar @x." and ",
-		scalar @y," elements\n";
-		$failed ++;
-		return 0;
-	}
+sub equal { my ($xref, $yref) = @_;
+	my $eps = .000000001;
+	my @x = @$xref; my @y = @$yref;
+	if (scalar @x != scalar @y) { return 0; }
 	my $i; for ($i=$[; $i<=$#x; $i++) {
-		if (abs($x[$i]-$y[$i]) > $eps) {
-			print STDERR (sprintf "unequal array element %d, %g versus %g\n",
-			$i,$x[$i],$y[$i]);
-			$failed ++;
-			return 0;
-		}
+		if (abs($x[$i]-$y[$i]) > $eps) { return 0; }
 	}
-	print STDERR "ok\n"; return 1;
+	return 1;
 }
 
 __END__

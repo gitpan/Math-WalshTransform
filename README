@@ -19,10 +19,10 @@ in software that monitors time-series data such as system or network
 administration data, share-price, currency, ecological, opinion poll,
 process management data, and so on.
 
-To install:
-   perl Install
+As from version 1.10, Math::WalshTransform uses C routines to perform
+the transforms. This runs 25 to 30 times faster than previous versions.
 
-that's all ! or you can still do it the old way ...
+To install:
 	perl Makefile.PL
 	make
 	make test
