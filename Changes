@@ -3,3 +3,4 @@
 20041211 1.01 big performance improvement in convolution, O(N^2) -> O(NlogN)
 20041215 1.02 test.pl has use not require, for invocation from other dirs
 20050111 1.10 xs in transform subs brings 30x more speed !  Install dropped
+20060410 1.11 xs is size, product, distance and normalise; fix VERSION

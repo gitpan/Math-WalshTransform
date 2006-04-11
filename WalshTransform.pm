@@ -9,21 +9,21 @@
 
 package Math::WalshTransform;
 no strict;
-$VERSION = '1.02';
+$VERSION = '1.11';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
 require DynaLoader;
 require Exporter;
 @ISA = qw(Exporter DynaLoader);
 @EXPORT = qw(fht fhtinv fwt fwtinv biggest logical_convolution
  logical_autocorrelation power_spectrum walsh2hadamard hadamard2walsh);
-@EXPORT_OK = qw(sublist distance size average normalise arr2txt);
+@EXPORT_OK = qw(sublist distance size average normalise product arr2txt);
 %EXPORT_TAGS = (ALL => [@EXPORT,@EXPORT_OK]);
 bootstrap Math::WalshTransform $VERSION;
 
 $PP = 0;
 
 sub fht {
-	if (! $PP) { return &xs_fht((scalar @_), @_); }
+	if (! $PP) { return &xs_fht(@_); }
 	my @mr = @_;
 	my $k = 1;
 	my $n = scalar @mr;
@@ -50,7 +50,7 @@ sub fht {
 	}
 }
 sub fhtinv {
-	if (! $PP) { return &xs_fhtinv((scalar @_), @_); }
+	if (! $PP) { return &xs_fhtinv(@_); }
 	my @mr = @_;
 	my $k = 1;
 	my $n = scalar @mr;
@@ -77,7 +77,7 @@ sub fhtinv {
 	}
 }
 sub fwt { # might be easier to Hadamard transform and shuffle the results
-	if (! $PP) { return &xs_fwt((scalar @_), @_); }
+	if (! $PP) { return &xs_fwt(@_); }
 	my @mr = @_;
 	my $n = scalar @mr; my @nr; $#nr=$#mr;
 	my $k; my $l; my $i; my $nl; my $nk; my $kp1;
@@ -125,7 +125,7 @@ sub fwt { # might be easier to Hadamard transform and shuffle the results
 	return @mr;
 }
 sub fwtinv {
-	if (! $PP) { return &xs_fwtinv((scalar @_), @_); }
+	if (! $PP) { return &xs_fwtinv(@_); }
 	my @mr = @_; my $n = scalar @mr; my @nr; $#nr=$#mr;
 	my $k; my $l; my $i; my $nl; my $nk; my $kp1;
 
@@ -180,9 +180,9 @@ sub logical_convolution { my ($xref, $yref) = @_;
 	"Math::WalshTransform::logical_convolution 2nd arg must be array ref\n";
 		return undef;
 	}
-	my @Fx = &fwt(@$xref);  my @Fy = &fwt(@$yref);  my @Fz; $#Fz=$#Fx;
-	foreach ($[ .. $#Fx) { $Fz[$_] = $Fx[$_] * $Fy[$_]; }
-	return &fwtinv(@Fz);
+	my @Fx = &fwt(@$xref);  my @Fy = &fwt(@$yref);
+	# my @Fz; foreach ($[ .. $#Fx) { $Fz[$_] = $Fx[$_] * $Fy[$_]; } return @Fz;
+	return &fwtinv(&product(\@Fx, \@Fy));
 }
 
 sub old_logical_convolution { my ($xref, $yref) = @_;
@@ -240,7 +240,7 @@ sub biggest { my $k = shift @_; my @weeded = @_;
 }
 sub sublist { my ($aref, $offset, $length) = @_;
 	if (ref $aref ne 'ARRAY') {
-		warn "Math::WalshTransform::sublist 1st arg must be array ref\n"; return ();
+	warn "Math::WalshTransform::sublist 1st arg must be array ref\n"; return ();
 	}
 	my $first;
 	if ($offset<0) { $first = $#{$aref}+$offset+1; } else { $first=$offset; }
@@ -254,32 +254,28 @@ sub sublist { my ($aref, $offset, $length) = @_;
 	for ($i=$first; $i<=$last; $i++) { push @sublist, ${$aref}[$i]; }
 	return @sublist;
 }
-sub distance { my ($xref, $yref) = @_;  # Euclidian metric
-	if (ref $xref ne 'ARRAY') {
-		warn "Math::WalshTransform::distance 1st arg must be array ref\n";
-		return undef;
-	} elsif (ref $yref ne 'ARRAY') {
-		warn "Math::WalshTransform::distance 2nd arg must be array ref\n";
-		return undef;
-	}
-	my $distance = 0.0; my $i; my $diff;
-	for ($i=$[; $i<= $#$xref; $i++) {
-		$diff = ${$xref}[$i] - ${$yref}[$i];
-		$distance += $diff * $diff;
-	}
-	return sqrt $distance;
-}
-sub size {
-	my $sum = 0.0;
-	foreach (@_) { $sum += $_ * $_; }
-	return sqrt $sum;
-}
-sub normalise {
-	my $size = &size(@_);
-	my @normalised = ();
-	foreach (@_) { push @normalised, $_/$size; }
-	return @normalised;
-}
+# sub distance { my ($xref, $yref) = @_;  # Euclidian metric
+# 	if (ref $xref ne 'ARRAY') {
+# 		warn "Math::WalshTransform::distance 1st arg must be array ref\n";
+# 		return undef;
+# 	} elsif (ref $yref ne 'ARRAY') {
+# 		warn "Math::WalshTransform::distance 2nd arg must be array ref\n";
+# 		return undef;
+# 	}
+# 	my $distance = 0.0; my $i; my $diff;
+# 	for ($i=$[; $i<= $#$xref; $i++) {
+# 		$diff = ${$xref}[$i] - ${$yref}[$i];
+# 		$distance += $diff * $diff;
+# 	}
+# 	return sqrt $distance;
+# }
+# sub size {my $sum=0.0; foreach (@_) {$sum+=$_*$_;} return sqrt $sum;}
+# sub normalise {
+#	my $size = &size(@_);
+#	my @normalised = ();
+#	foreach (@_) { push @normalised, $_/$size; }
+#	return @normalised;
+#}
 sub average {
 	my $i = $[; my $j; my @sum;
 	foreach (@_) {
@@ -394,7 +390,7 @@ Not yet included are multi-dimensional Hadamard and Walsh Transforms,
 conversion between Logical and Arithmetic Autocorrelation Functions,
 or conversion between the Walsh Power Spectrum and the Fourier Power Spectrum.
 
-Version 1.02
+Version 1.11
 
 =head1 SUBROUTINES
 
@@ -506,6 +502,11 @@ This routine returns an array scaled so that its I<size> is 1.0
 
 This routine returns an array in which each element is the average
 of the corresponding elements of all the argument arrays.
+
+=item I<product(\@array1, \@array2)>
+
+This routine returns an array in which each element is the product
+of the corresponding elements of the argument arrays.
 
 =head1 MATHEMATICS
 

@@ -7,9 +7,10 @@
 #            modify it under the same terms as Perl itself.             #
 #########################################################################
 
-use Test::Simple tests => 7;
-use Math::WalshTransform;
+use Test::Simple tests => 12;
+use Math::WalshTransform qw(:ALL);
 # $Math::WalshTransform::PP = 1;
+my $eps = .000000001;
 
 my @x = (0,2,2,0);
 my @X = &fht(@x);
@@ -38,9 +39,22 @@ my @lc1 = &Math::WalshTransform::old_logical_convolution(\@f1, \@f2);
 my @lc2 = &logical_convolution(\@f1, \@f2);
 ok (&equal(\@lc1,\@lc2), "Logical Convolution");
 
+ok (abs(2.5 - &size(1.0,-0.5,2.0,-1.0)) < $eps, "size");
+
+@x = (1.0, -1.5, 2.0, -2.5);
+my @y = (3.0, -3.5, -4.0, 4.5);
+ok (&equal(&product(\@x,\@y),[3.0, 5.25, -8.0, -11.25]), "product");
+
+ok (abs(2.5-&distance([0.5,-0.5,3.0,1.0],[-0.5,0.0,1.0,2.0]))<$eps,"distance");
+
+@y = &normalise(1.0,-0.5,2.0,-1.0);
+ok (&equal(\@y, [0.4,-0.2,0.8,-0.4]),"normalise");
+
+@y = &average([0.5,-0.5,3.0,1.0],[-0.5,0.0,1.0,2.0],[0.6,1.4,0.-2.2,0.3]);
+ok (&equal(\@y,[0.2,0.3,0.6,1.1]), "average");
+
 # --------------------------- infrastructure ----------------
 sub equal { my ($xref, $yref) = @_;
-	my $eps = .000000001;
 	my @x = @$xref; my @y = @$yref;
 	if (scalar @x != scalar @y) { return 0; }
 	my $i; for ($i=$[; $i<=$#x; $i++) {
