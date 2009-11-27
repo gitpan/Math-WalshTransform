@@ -9,7 +9,7 @@
 
 package Math::WalshTransform;
 no strict;
-$VERSION = '1.12';
+$VERSION = '1.13';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
 require DynaLoader;
 require Exporter;
@@ -390,7 +390,7 @@ Not yet included are multi-dimensional Hadamard and Walsh Transforms,
 conversion between Logical and Arithmetic Autocorrelation Functions,
 or conversion between the Walsh Power Spectrum and the Fourier Power Spectrum.
 
-Version 1.12
+Version 1.13
 
 =head1 SUBROUTINES
 
@@ -454,12 +454,16 @@ the number of values must be a power of 2.
 I<power_spectrum> returns a list of the Walsh Power Spectrum
 of the set of values.  See the MATHEMATICS section ...
 
+=back
+
 =head1 EXPORT_OK SUBROUTINES
 
 The following routines are not exported by default,
 but are exported under the I<ALL> tag, so if you need them you should:
 
  import Math::WalshTransform qw(:ALL);
+
+=over 3
 
 =item I<biggest($k,@x)>
 
@@ -508,6 +512,8 @@ of the corresponding elements of all the argument arrays.
 This routine returns an array in which each element is the product
 of the corresponding elements of the argument arrays.
 
+=back
+
 =head1 MATHEMATICS
 
 The Hadamard matrix is a square array of plus and minus ones,
@@ -530,6 +536,19 @@ be defined recursively:
 
 Each row of the Hadamard matrix corresponds to a Hadamard Function I<Had(j,k)>
 where j = 0...N-1
+
+Another way to describe a Hadamard matrix of dimension 2^N x 2^N
+is that the entry in row i and column j is (-1)^P, where P is the
+number of positions in which the binary expansion of i and j share a 1.
+From this definition it is immediate that the last row
+(and column) is a Thue-Morse (or Morse-Thue) sequence,
+and also that rows that are of the form 2^N - 2^j will be j-fold
+repetitions of the Thue-Morse sequence.
+
+The upper half of the Hadamard matrix are cycles of increasing
+wavelengths, and the lower half are Morse-Thue sequences on decreasing
+cell-sizes, much as the components of a
+Fourier analysis are sine-wavesof different wavelengths.
 
 The Walsh matrix is derived from the Hadamard matrix
 by rearranging the rows so that the number of sign-changes is in
@@ -622,15 +641,14 @@ Vol. AU-21 No. 3, June 1973, pp. 174-179
 
 =head1 SEE ALSO
 
-See also http://www.pjb.com.au/,
-http://www.pjb.com.au/comp/walshtransform.html,
-http://www.pjb.com.au/comp/evol.html,
-Math::Evol,
-http://www.pjb.com.au/comp/clui.html,
-Term::Clui,
-http://www.pjb.com.au/comp/tea.html,
-Crypt::Tea,
-http://mathworld.wolfram.com/WalshTransform.html,
-perl(1).
+ http://www.pjb.com.au/
+ http://search.cpan.org/perldoc?Math::WalshTransform
+ Math::Evol    http://search.cpan.org/perldoc?Math::Evol
+ Term::Clui    http://search.cpan.org/perldoc?Term::Clui
+ Crypt::Tea_JS http://search.cpan.org/perldoc?Crypt::Tea_JS
+ http://en.wikipedia.org/wiki/Thue-Morse_sequence
+ http://mathworld.wolfram.com/WalshTransform.html
+ http://arxiv.org/pdf/nlin/0510009
+ perl(1).
 
 =cut

@@ -5,3 +5,4 @@
 20050111 1.10 xs in transform subs brings 30x more speed !  Install dropped
 20060410 1.11 xs is size, product, distance and normalise; fix VERSION
 20060414 1.12 no change; just re-try the Upload into CPAN
+20091128 1.13 repaired POD, and mention Morse-Thue sequences
