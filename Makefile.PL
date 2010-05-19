@@ -1,4 +1,6 @@
 use ExtUtils::MakeMaker;
+# Bug #52416: 5.6.2 fails with "xref is not of type AVPtr"
+die "5.6.2 unsupported" if $] eq '5.006002';
 
 WriteMakefile(
 	NAME      => 'Math::WalshTransform',

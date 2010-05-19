@@ -9,7 +9,7 @@
 
 package Math::WalshTransform;
 no strict;
-$VERSION = '1.13';
+$VERSION = '1.15';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
 require DynaLoader;
 require Exporter;
@@ -390,7 +390,7 @@ Not yet included are multi-dimensional Hadamard and Walsh Transforms,
 conversion between Logical and Arithmetic Autocorrelation Functions,
 or conversion between the Walsh Power Spectrum and the Fourier Power Spectrum.
 
-Version 1.13
+Version 1.15
 
 =head1 SUBROUTINES
 
@@ -534,27 +534,24 @@ be defined recursively:
     2N   | Had  -Had  |
          |    N     N |
 
-Each row of the Hadamard matrix corresponds to a Hadamard Function I<Had(j,k)>
-where j = 0...N-1
+Each row of the Hadamard matrix corresponds to
+a Hadamard Function I<Had(j,k)> where j = 0...N-1
 
-Another way to describe a Hadamard matrix of dimension 2^N x 2^N
-is that the entry in row i and column j is (-1)^P, where P is the
-number of positions in which the binary expansion of i and j share a 1.
-From this definition it is immediate that the last row
-(and column) is a Thue-Morse (or Morse-Thue) sequence,
-and also that rows that are of the form 2^N - 2^j will be j-fold
-repetitions of the Thue-Morse sequence.
+Another way to describe a Hadamard matrix of dimension 2^N x 2^N is
+that the entry in row i and column j is (-1)^P, where P is the number
+of positions in which the binary expansion of i and j share a 1.
+From this definition it is immediate that the last row (and column) is a
+Thue-Morse (or Morse-Thue) sequence, and also that rows that are of the
+form 2^N - 2^j will be j-fold repetitions of the Thue-Morse sequence.
 
 The upper half of the Hadamard matrix are cycles of increasing
-wavelengths, and the lower half are Morse-Thue sequences on decreasing
-cell-sizes, much as the components of a
-Fourier analysis are sine-wavesof different wavelengths.
+wavelengths, and the lower half are Morse-Thue sequences on
+decreasing cell-sizes, much as the components of a
+Fourier analysis are sine-waves of different wavelengths.
 
-The Walsh matrix is derived from the Hadamard matrix
-by rearranging the rows so that the number of sign-changes is in
-increasing order.
-Each row of the Walsh matrix corresponds to a Walsh Function I<Wal(j,k)>
-where j = 0...N-1
+The Walsh matrix is derived from the Hadamard matrix by rearranging the rows
+so that the number of sign-changes is in increasing order.  Each row of the
+Walsh matrix corresponds to a Walsh Function I<Wal(j,k)> where j = 0...N-1
 
 The one-dimensional Hadamard transform pair is defined by
 
@@ -592,10 +589,9 @@ Likewise there exists a Logical Wiener-Khintchine Theorem,
 stating that the Walsh Power Spectrum
 is the Walsh transform of the Logical Autocorrelation Function.
 
-There exist linear transformations converting between Logical Convolution
-and the normal Arithmetic Convolution,
-and between the Walsh Power Spectrum
-and the normal Fourier Power Spectrum.
+There exist linear transformations converting
+between Logical Convolution and the normal Arithmetic Convolution,
+and between the Walsh Power Spectrum and the normal Fourier Power Spectrum.
 
 =head1 AUTHOR
 
@@ -648,7 +644,8 @@ Vol. AU-21 No. 3, June 1973, pp. 174-179
  Crypt::Tea_JS http://search.cpan.org/perldoc?Crypt::Tea_JS
  http://en.wikipedia.org/wiki/Thue-Morse_sequence
  http://mathworld.wolfram.com/WalshTransform.html
- http://arxiv.org/pdf/nlin/0510009
+ http://arxiv.org/abs/nlin/0510009
+ http://arxiv.org/abs/cs/0703057
  perl(1).
 
 =cut
