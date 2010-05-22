@@ -213,8 +213,8 @@ CODE:
 
 void
 product (xref, yref) 
-	AV* xref
-	AV* yref
+	SV* xref
+	SV* yref
 CODE:
 {
 	register int i;
@@ -222,8 +222,8 @@ CODE:
 	unsigned int nx, ny;
 	SV** fetch;
 
-	nx = 1+av_len(xref);
-	ny = 1+av_len(yref);
+	nx = 1+av_len((AV*)SvRV(xref));
+	ny = 1+av_len((AV*)SvRV(yref));
 
 	if (nx != ny) { fprintf (stderr,
 		"product: arrays nx=%d ny=%d must be the same size \n",nx,ny);
@@ -231,12 +231,12 @@ CODE:
 	}
 	
 	for (i=0; i<nx; i++) {
-		fetch = av_fetch(xref,i,0);
+		fetch = av_fetch((AV*)SvRV(xref),i,0);
 		if (fetch == NULL) {
 			fprintf (stderr, "x[%d] was NULL\n",i); XSRETURN_EMPTY;
 		}
 		x = (double) SvNV(*fetch);
-		fetch = av_fetch(yref,i,0);
+		fetch = av_fetch((AV*)SvRV(yref),i,0);
 		if (fetch == NULL) {
 			fprintf (stderr, "y[%d] was NULL\n",i); XSRETURN_EMPTY;
 		}
@@ -260,8 +260,8 @@ CODE:
 
 void
 distance (xref, yref) 
-	AV* xref
-	AV* yref
+	SV* xref
+	SV* yref
 CODE:
 {
 	register int i;
@@ -270,8 +270,8 @@ CODE:
 	SV** fetch;
 	sumofsquares = 0.0;
 
-	nx = 1+av_len(xref);
-	ny = 1+av_len(yref);
+	nx = 1+av_len((AV*)SvRV(xref));
+	ny = 1+av_len((AV*)SvRV(yref));
 
 	if (nx != ny) { fprintf (stderr,
 		"product: arrays nx=%d ny=%d must be the same size \n",nx,ny);
@@ -279,12 +279,12 @@ CODE:
 	}
 	
 	for (i=0; i<nx; i++) {
-		fetch = av_fetch(xref,i,0);
+		fetch = av_fetch((AV*)SvRV(xref),i,0);
 		if (fetch == NULL) {
 			fprintf (stderr, "x[%d] was NULL\n",i); XSRETURN_EMPTY;
 		}
 		x = (double) SvNV(*fetch);
-		fetch = av_fetch(yref,i,0);
+		fetch = av_fetch((AV*)SvRV(yref),i,0);
 		if (fetch == NULL) {
 			fprintf (stderr, "y[%d] was NULL\n",i); XSRETURN_EMPTY;
 		}

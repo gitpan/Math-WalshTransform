@@ -9,7 +9,7 @@
 
 package Math::WalshTransform;
 no strict;
-$VERSION = '1.15';
+$VERSION = '1.16';
 # gives a -w warning, but I'm afraid $VERSION .= ''; would confuse CPAN
 require DynaLoader;
 require Exporter;
@@ -390,7 +390,7 @@ Not yet included are multi-dimensional Hadamard and Walsh Transforms,
 conversion between Logical and Arithmetic Autocorrelation Functions,
 or conversion between the Walsh Power Spectrum and the Fourier Power Spectrum.
 
-Version 1.15
+Version 1.16
 
 =head1 SUBROUTINES
 

@@ -1,6 +1,7 @@
 README
 MANIFEST
 Changes
+META.yml
 Makefile.PL
 test.pl
 WalshTransform.pm

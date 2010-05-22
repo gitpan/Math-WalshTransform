@@ -8,3 +8,4 @@
 20091128 1.13 repaired POD, and mention Morse-Thue sequences
 20100519 1.14 fix Bug #52416: requires not 5.6.2 in Makefile.PL and META.yml
 20100520 1.15 remember to include new META.yml file in the tarball
+20100522 1.16 Thanks to sisyphus, XS now works with 5.6.*
