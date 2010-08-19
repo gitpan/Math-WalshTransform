@@ -6,3 +6,5 @@ Makefile.PL
 test.pl
 WalshTransform.pm
 WalshTransform.xs
+lua/WalshTransform.lua
+lua/test.lua

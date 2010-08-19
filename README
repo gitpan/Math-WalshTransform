@@ -21,6 +21,7 @@ process management data, and so on.
 
 As from version 1.10, Math::WalshTransform uses C routines to perform
 the transforms. This runs 25 to 30 times faster than previous versions.
+Also included is a call-compatible translation into Lua.
 
 To install:
 	perl Makefile.PL
